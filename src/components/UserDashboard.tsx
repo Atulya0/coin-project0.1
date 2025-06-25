@@ -1,41 +1,111 @@
 import React, { useState } from 'react';
-import { Coins, Gift, CreditCard, History, LogOut, User, Copy, Check, Users } from 'lucide-react';
+import { Coins, Gift, CreditCard, History, LogOut, User, Copy, Check, Users, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { coinPackages } from '../data/mockData';
 import Button from './Button';
+import UPIPaymentModal from './UPIPaymentModal';
 
 const UserDashboard: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'buy' | 'coupons' | 'history'>('dashboard');
   const [purchasing, setPurchasing] = useState(false);
   const [copiedCoupon] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<{[key: string]: number}>({});
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedCoinPackage, setSelectedCoinPackage] = useState<any>(null);
 
-  const handlePurchase = async (packageId: string) => {
-    setPurchasing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const selectedPackage = coinPackages.find(p => p.id === packageId);
-    if (selectedPackage && user) {
-      const totalCoins = selectedPackage.coins + selectedPackage.bonus;
-      const newCoupon = {
-        id: Date.now().toString(),
-        code: `COIN${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
-        value: Math.floor(selectedPackage.price * 0.1), // 10% of purchase as coupon value
-        isUsed: false,
-        createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
-      };
-
-      updateUser({
-        coins: user.coins + totalCoins,
-        totalSpent: user.totalSpent + selectedPackage.price,
-        coupons: [...user.coupons, newCoupon]
-      });
+  // Coin packages from LandingPage
+  const coinPackages = [
+    {
+      id: 'silver',
+      name: 'Silver',
+      coins: 100,
+      price: 100,
+      color: 'from-gray-400 to-gray-600',
+      icon: '🥈',
+      image: '/WhatsApp Image 2025-06-21 at 12.52.26 AM_resized.webp',
+      metalColor: 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-300',
+      shadowColor: 'shadow-gray-400/50'
+    },
+    {
+      id: 'gold18k',
+      name: '18K Gold',
+      coins: 500,
+      price: 500,
+      color: 'from-yellow-400 to-yellow-600',
+      icon: '🥇',
+      image: '/WhatsApp Image 2025-06-21 at 12.52.27 AM_resized.webp',
+      metalColor: 'bg-gradient-to-br from-yellow-300 via-yellow-200 to-yellow-400',
+      shadowColor: 'shadow-yellow-400/50'
+    },
+    {
+      id: 'gold24k',
+      name: '24K Gold',
+      coins: 1000,
+      price: 1000,
+      color: 'from-yellow-500 to-orange-500',
+      icon: '👑',
+      image: '/WhatsApp Image 2025-06-21 at 12.52.27 AM_resized.webp',
+      metalColor: 'bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-400',
+      shadowColor: 'shadow-orange-400/50'
+    },
+    {
+      id: 'diamond',
+      name: 'Diamond',
+      coins: 2500,
+      price: 2500,
+      color: 'from-blue-400 to-cyan-400',
+      icon: '💎',
+      image: '/diamond_resized.webp',
+      metalColor: 'bg-gradient-to-br from-blue-100 via-white to-cyan-200',
+      shadowColor: 'shadow-cyan-400/50'
+    },
+    {
+      id: 'platinum',
+      name: 'Platinum',
+      coins: 5000,
+      price: 5000,
+      color: 'from-purple-400 to-indigo-500',
+      icon: '⭐',
+      image: '/platinum_resized.webp',
+      metalColor: 'bg-gradient-to-br from-purple-200 via-gray-100 to-indigo-300',
+      shadowColor: 'shadow-purple-400/50'
+    },
+    {
+      id: 'palladium',
+      name: 'Palladium',
+      coins: 10000,
+      price: 10000,
+      color: 'from-pink-500 to-rose-600',
+      icon: '🚀',
+      image: '/palladium image_resized.webp',
+      metalColor: 'bg-gradient-to-br from-pink-200 via-rose-100 to-rose-300',
+      shadowColor: 'shadow-rose-400/50'
     }
-    
-    setPurchasing(false);
+  ];
+
+  const updateQuantity = (coinId: string, change: number) => {
+    setQuantities(prev => {
+      const currentQty = prev[coinId] || 0;
+      const newQty = Math.max(0, currentQty + change);
+      return {
+        ...prev,
+        [coinId]: newQty
+      };
+    });
+  };
+
+  const getQuantity = (coinId: string) => quantities[coinId] || 1;
+
+  const handleBuyCoin = (coinPackage: any) => {
+    const quantity = getQuantity(coinPackage.id);
+    if (quantity > 0) {
+      setSelectedCoinPackage(coinPackage);
+      setShowPaymentModal(true);
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+    console.log('Payment successful!');
   };
 
   if (!user) return null;
@@ -45,15 +115,11 @@ const UserDashboard: React.FC = () => {
     { id: 'buy', label: 'Buy Coins', icon: CreditCard },
     { id: 'coupons', label: 'My Coupons', icon: Gift },
     { id: 'history', label: 'History', icon: History },
-    { id: 'branch', label: 'Branch', icon: Users }, // Added Branch tab
- ];
-
-  // function generateFreeCoupon(): void {
-  //   throw new Error('Function not implemented.');
-  // }
+    { id: 'branch', label: 'Branch', icon: Users },
+  ];
 
   function copyCouponCode(code: string): void {
-    throw new Error('Function not implemented.');
+    navigator.clipboard.writeText(code);
   }
 
   return (
@@ -157,26 +223,33 @@ const UserDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Quick Actions */}
+                {/* Transaction History */}
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                  <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Button
-                      onClick={() => setActiveTab('buy')}
-                      className="justify-center py-4"
-                    >
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Buy More Coins
-                    </Button>
-                    {/* <Button
-                      onClick={generateFreeCoupon}
-                      variant="outline"
-                      disabled={user.coins < 100}
-                      className="justify-center py-4 bg-white/10 border-white/20 text-white hover:bg-white/20 disabled:opacity-50"
-                    >
-                      <Gift className="w-5 h-5 mr-2" />
-                      Generate Coupon (100 coins)
-                    </Button> */}
+                  <h3 className="text-xl font-bold text-white mb-4">Transaction History</h3>
+                  <div className="space-y-4">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-semibold text-white">Account Created</p>
+                          <p className="text-gray-300 text-sm">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-green-400 font-semibold">+0 coins</div>
+                      </div>
+                    </div>
+                    
+                    {user.totalSpent > 0 && (
+                      <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-semibold text-white">Coin Purchase</p>
+                            <p className="text-gray-300 text-sm">Various packages</p>
+                          </div>
+                          <div className="text-green-400 font-semibold">₹{user.totalSpent}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -186,43 +259,86 @@ const UserDashboard: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                   <h3 className="text-2xl font-bold text-white mb-6">Choose Your Coin Package</h3>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {coinPackages.map((pkg) => (
-                      <div
-                        key={pkg.id}
-                        className={`relative bg-white/10 backdrop-blur-lg rounded-xl p-6 border transition-all duration-300 hover:bg-white/20 hover:scale-105 ${
-                          pkg.popular 
-                            ? 'border-yellow-400 ring-2 ring-yellow-400/50' 
-                            : 'border-white/20'
-                        }`}
-                      >
-                        {pkg.popular && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                            <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-1 rounded-full text-sm font-bold">
-                              Most Popular
-                            </span>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {coinPackages.map((pkg, index) => {
+                      const quantity = getQuantity(pkg.id);
+                      const totalPrice = pkg.price * quantity;
+                      const totalCoins = pkg.coins * quantity;
+                      
+                      return (
+                        <div
+                          key={pkg.id}
+                          className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 transition-all duration-300"
+                        >
+                          <div className="text-center">
+                            {/* Fixed Size Coin Image Container */}
+                            <div className="relative w-32 h-32 mx-auto mb-6">
+                              <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden shadow-2xl border-4 border-white/20 bg-white/10">
+                                <img
+                                  src={pkg.image}
+                                  alt={`${pkg.name} Coin`}
+                                  className="w-full h-full object-cover"
+                                  style={{
+                                    filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))',
+                                  }}
+                                />
+                              </div>
+                              {/* Coin Shadow */}
+                              <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-6 ${pkg.shadowColor} rounded-full blur-md opacity-50`}></div>
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-white mb-3">
+                              {pkg.name}
+                            </h3>
+                            
+                            {/* Quantity Controls */}
+                            <div className="flex items-center justify-center space-x-4 mb-4">
+                              <button
+                                onClick={() => updateQuantity(pkg.id, -1)}
+                                disabled={quantity <= 0}
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <Minus className="w-5 h-5 text-white" />
+                              </button>
+                              <div className="bg-white/10 rounded-lg px-4 py-2 min-w-[3rem]">
+                                <span className="text-white font-bold text-lg">{quantity}</span>
+                              </div>
+                              <button
+                                onClick={() => updateQuantity(pkg.id, 1)}
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-200"
+                              >
+                                <Plus className="w-5 h-5 text-white" />
+                              </button>
+                            </div>
+                            
+                            <div className="text-2xl font-bold text-white mb-2">
+                              {totalCoins.toLocaleString()}
+                            </div>
+                            <div className="text-lg text-gray-300 mb-4">
+                              coins
+                            </div>
+                            <div className="text-2xl font-bold text-green-400 mb-6">
+                              ₹{totalPrice.toLocaleString()}
+                            </div>
+                            
+                            {/* Buy Button */}
+                            <Button
+                              onClick={() => handleBuyCoin(pkg)}
+                              disabled={quantity === 0}
+                              className={`w-full font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center ${
+                                quantity === 0 
+                                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                                  : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-xl'
+                              }`}
+                            >
+                              <ShoppingCart className="w-5 h-5 mr-2" />
+                              {quantity === 0 ? 'Select Quantity' : 'Buy Now'}
+                            </Button>
                           </div>
-                        )}
-                        
-                        <div className="text-center">
-                          <h4 className="text-xl font-bold text-white mb-2">{pkg.name}</h4>
-                          <div className="text-3xl font-bold text-white mb-2">₹{pkg.price}</div>
-                          <div className="text-gray-300 mb-4">
-                            {pkg.coins} coins
-                            {pkg.bonus > 0 && (
-                              <span className="text-green-400"> + {pkg.bonus} bonus</span>
-                            )}
-                          </div>
-                          <Button
-                            onClick={() => handlePurchase(pkg.id)}
-                            loading={purchasing}
-                            className="w-full"
-                          >
-                            Purchase Now
-                          </Button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -258,11 +374,7 @@ const UserDashboard: React.FC = () => {
                                   onClick={() => copyCouponCode(coupon.code)}
                                   className="text-gray-400 hover:text-white transition-colors"
                                 >
-                                  {copiedCoupon === coupon.code ? (
-                                    <Check className="w-4 h-4 text-green-400" />
-                                  ) : (
-                                    <Copy className="w-4 h-4" />
-                                  )}
+                                  <Copy className="w-4 h-4" />
                                 </button>
                               </div>
                               <p className="text-gray-300 text-sm">
@@ -318,9 +430,35 @@ const UserDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {activeTab === 'branch' && (
+              <div className="space-y-6">
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                  <h3 className="text-2xl font-bold text-white mb-6">Branch Information</h3>
+                  <div className="text-center py-8">
+                    <Users className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                    <p className="text-gray-300 mb-4">Branch features coming soon!</p>
+                    <p className="text-sm text-gray-400">
+                      Connect with other users and manage your network.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* UPI Payment Modal */}
+      {showPaymentModal && selectedCoinPackage && (
+        <UPIPaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          coinPackage={selectedCoinPackage}
+          quantity={getQuantity(selectedCoinPackage.id)}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };

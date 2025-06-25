@@ -5,7 +5,7 @@ import { mockUsers, mockTransactions } from '../data/mockData';
 import Button from './Button';
 
 const SuperAdminPanel: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, addAmountToUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'admins' | 'users' | 'transactions' | 'analytics'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
@@ -25,7 +25,8 @@ const SuperAdminPanel: React.FC = () => {
       totalUsers: 25,
       totalRevenue: 50000,
       createdAt: '2024-01-01T00:00:00Z',
-      status: 'active'
+      status: 'active',
+      coins: 1000
     },
     {
       id: 'admin2',
@@ -35,7 +36,8 @@ const SuperAdminPanel: React.FC = () => {
       totalUsers: 18,
       totalRevenue: 35000,
       createdAt: '2024-01-15T00:00:00Z',
-      status: 'active'
+      status: 'active',
+      coins: 750
     }
   ];
 
@@ -52,8 +54,9 @@ const SuperAdminPanel: React.FC = () => {
 
   const handleAddAmount = () => {
     if (selectedUserForAmount && amountToAdd) {
-      // Here you would typically make an API call to add amount
-      console.log(`Adding ₹${amountToAdd} to ${selectedUserForAmount.name}`);
+      const amount = parseFloat(amountToAdd);
+      addAmountToUser(selectedUserForAmount.id, amount);
+      console.log(`Added ₹${amount} to ${selectedUserForAmount.name}`);
       setShowAddAmountModal(false);
       setAmountToAdd('');
       setSelectedUserForAmount(null);
@@ -226,6 +229,7 @@ const SuperAdminPanel: React.FC = () => {
                               <h4 className="font-semibold text-white">{admin.name}</h4>
                               <p className="text-gray-300 text-sm">{admin.email}</p>
                               <p className="text-gray-300 text-sm">Mobile: {admin.mobile}</p>
+                              <p className="text-yellow-400 text-sm">Coins: {admin.coins}</p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-4">
@@ -233,14 +237,27 @@ const SuperAdminPanel: React.FC = () => {
                               <p className="text-white font-medium">{admin.totalUsers} Users</p>
                               <p className="text-green-400 font-medium">₹{admin.totalRevenue}</p>
                             </div>
-                            <Button
-                              onClick={() => setSelectedAdmin(admin)}
-                              size="sm"
-                              className="bg-blue-600 hover:bg-blue-700"
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View Users
-                            </Button>
+                            <div className="flex flex-col space-y-2">
+                              <Button
+                                onClick={() => setSelectedAdmin(admin)}
+                                size="sm"
+                                className="bg-blue-600 hover:bg-blue-700"
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View Users
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setSelectedUserForAmount(admin);
+                                  setShowAddAmountModal(true);
+                                }}
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <Plus className="w-4 h-4 mr-1" />
+                                Add Amount
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -466,11 +483,12 @@ const SuperAdminPanel: React.FC = () => {
               <p className="text-gray-300 mb-2">Adding amount to:</p>
               <p className="text-white font-semibold">{selectedUserForAmount.name}</p>
               <p className="text-gray-400 text-sm">{selectedUserForAmount.email}</p>
+              <p className="text-yellow-400 text-sm">Current Coins: {selectedUserForAmount.coins}</p>
             </div>
 
             <div className="mb-6">
               <label className="block text-white text-sm font-medium mb-2">
-                Amount (₹)
+                Amount (Coins)
               </label>
               <input
                 type="number"

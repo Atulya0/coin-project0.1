@@ -8,6 +8,7 @@ interface AuthContextType {
   register: (mobile: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  addAmountToUser: (userId: string, amount: number) => void;
   isLoading: boolean;
 }
 
@@ -142,8 +143,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const addAmountToUser = (userId: string, amount: number) => {
+    // Find user in mockUsers and update their coins
+    const userIndex = mockUsers.findIndex(u => u.id === userId);
+    if (userIndex !== -1) {
+      mockUsers[userIndex].coins += amount;
+      
+      // If the updated user is the current logged-in user, update the state
+      if (user && user.id === userId) {
+        const updatedUser = { ...user, coins: user.coins + amount };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateUser, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, addAmountToUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

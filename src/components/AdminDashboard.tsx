@@ -6,7 +6,7 @@ import Button from './Button';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'transactions' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'transactions' | 'analytics' | 'branch'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!user || user.role !== 'admin') return null;
@@ -26,7 +26,8 @@ const AdminDashboard: React.FC = () => {
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'transactions', label: 'Transactions', icon: DollarSign },
-    { id: 'analytics', label: 'Analytics', icon: Filter }
+    { id: 'analytics', label: 'Analytics', icon: Filter },
+    { id: 'branch', label: 'Branch', icon: Users }
   ];
 
   return (
@@ -38,7 +39,6 @@ const AdminDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
-              
               <div className="bg-gradient-to-r from-red-500 to-pink-600 rounded-full p-2">
                 <Users className="w-6 h-6 text-white" />
               </div>
@@ -127,7 +127,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-300 text-sm">Total Redem</p>
+                        <p className="text-gray-300 text-sm">Total Redeem</p>
                         <p className="text-3xl font-bold text-white">{totalCoupons}</p>
                       </div>
                       <Gift className="w-10 h-10 text-purple-400" />
@@ -183,7 +183,6 @@ const AdminDashboard: React.FC = () => {
                           <th className="text-left py-3 px-4 font-medium text-gray-300">User</th>
                           <th className="text-left py-3 px-4 font-medium text-gray-300">Amount</th>
                           <th className="text-left py-3 px-4 font-medium text-gray-300">Stock</th>
-                          {/* <th className="text-left py-3 px-4 font-medium text-gray-300">Coupons</th> */}
                           <th className="text-left py-3 px-4 font-medium text-gray-300">Joined</th>
                         </tr>
                       </thead>
@@ -198,7 +197,6 @@ const AdminDashboard: React.FC = () => {
                             </td>
                             <td className="py-4 px-4 text-white">{user.coins}</td>
                             <td className="py-4 px-4 text-white">₹{user.totalSpent}</td>
-                            {/* <td className="py-4 px-4 text-white">{user.coupons.length}</td> */}
                             <td className="py-4 px-4 text-gray-300">
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
@@ -306,6 +304,73 @@ const AdminDashboard: React.FC = () => {
                       </div>
                       <div className="text-gray-300 text-sm">Avg Coins per User</div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'branch' && (
+              <div className="space-y-6">
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                  <h3 className="text-2xl font-bold text-white mb-6">Branch Management</h3>
+                  
+                  {/* Branch Stats */}
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-white mb-2">5</div>
+                        <div className="text-gray-300 text-sm">Active Branches</div>
+                      </div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-white mb-2">125</div>
+                        <div className="text-gray-300 text-sm">Branch Users</div>
+                      </div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-white mb-2">₹45,000</div>
+                        <div className="text-gray-300 text-sm">Branch Revenue</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Branch List */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-white">Branch Locations</h4>
+                    {[
+                      { id: 1, name: 'Mumbai Central', users: 35, revenue: 15000, status: 'active' },
+                      { id: 2, name: 'Delhi North', users: 28, revenue: 12000, status: 'active' },
+                      { id: 3, name: 'Bangalore Tech', users: 42, revenue: 18000, status: 'active' },
+                      { id: 4, name: 'Chennai Marina', users: 20, revenue: 8000, status: 'pending' }
+                    ].map((branch) => (
+                      <div key={branch.id} className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h5 className="font-semibold text-white">{branch.name}</h5>
+                            <p className="text-gray-300 text-sm">
+                              {branch.users} users • ₹{branch.revenue} revenue
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              branch.status === 'active' 
+                                ? 'bg-green-600 text-white' 
+                                : 'bg-yellow-600 text-white'
+                            }`}>
+                              {branch.status}
+                            </span>
+                            <Button
+                              size="sm"
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              Manage
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
