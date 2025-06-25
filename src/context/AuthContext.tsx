@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types'; // Make sure User type is defined correctly
-import { mockUsers } from '../data/mockData'; // Optional: ensure mockUsers is an array of User
+import { User } from '../types';
+import { mockUsers } from '../data/mockData';
 
 interface AuthContextType {
   user: User | null;
-  login: (mobile: string, password: string, role?: 'user' | 'admin') => Promise<boolean>;
+  login: (mobile: string, password: string, role?: 'user' | 'admin' | 'superadmin') => Promise<boolean>;
   register: (mobile: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
@@ -37,13 +37,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (mobile: string, password: string, role?: 'user' | 'admin'): Promise<boolean> => {
+  const login = async (mobile: string, password: string, role?: 'user' | 'admin' | 'superadmin'): Promise<boolean> => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     let authenticatedUser: User | null = null;
 
-    if (mobile === '7269010957' && password === 'admin' && role === 'admin') {
+    if (mobile === '9999999999' && password === 'superadmin' && role === 'superadmin') {
+      const superAdminUser: User = {
+        id: 'superadmin',
+        mobile,
+        name: 'Super Admin',
+        role: 'superadmin',
+        coins: 0,
+        coupons: [],
+        createdAt: new Date().toISOString(),
+        totalSpent: 0,
+        email: 'superadmin@betmaster.com'
+      };
+      authenticatedUser = superAdminUser;
+    } else if (mobile === '7269010957' && password === 'admin' && role === 'admin') {
       const adminUser: User = {
         id: 'admin',
         mobile,
@@ -51,9 +64,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         role: 'admin',
         coins: 0,
         coupons: [],
-        createdAt: new Date().toISOString(), // Add createdAt
-        totalSpent: 0, // Add totalSpent
-        email: '' // Add email
+        createdAt: new Date().toISOString(),
+        totalSpent: 0,
+        email: 'admin@betmaster.com'
       };
       authenticatedUser = adminUser;
     } else if (mobile === '7269010957' && password === 'user' && role === 'user') {
@@ -65,8 +78,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         coins: 0,
         coupons: [],
         createdAt: new Date().toISOString(),
-        totalSpent: 0, // Add totalSpent
-        email: '' // Add email
+        totalSpent: 0,
+        email: 'user@betmaster.com'
       };
       authenticatedUser = regularUser;
     }
@@ -75,16 +88,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(authenticatedUser);
       localStorage.setItem('user', JSON.stringify(authenticatedUser));
       setIsLoading(false);
-      return true; // Login successful
+      return true;
     } else {
       setIsLoading(false);
-      return false; // Login failed
+      return false;
     }
   };
 
   const register = async (mobile: string, password: string, name: string): Promise<boolean> => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const existingUser = mockUsers.find(u => u.mobile === mobile);
     if (existingUser) {

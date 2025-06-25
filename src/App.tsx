@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './components/LandingPage';
 import UserDashboard from './components/UserDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import SuperAdminPanel from './components/SuperAdminPanel';
 import LoadingSpinner from './components/LoadingSpinner';
 
 const AppContent: React.FC = () => {
@@ -21,6 +22,10 @@ const AppContent: React.FC = () => {
 
   if (!user) {
     return <LandingPage />;
+  }
+
+  if (user.role === 'superadmin') {
+    return <SuperAdminPanel />;
   }
 
   if (user.role === 'admin') {

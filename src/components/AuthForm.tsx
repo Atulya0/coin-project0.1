@@ -30,19 +30,24 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
     try {
       if (mode === 'login') {
         const { mobile, password } = formData;
-        if (mobile === '7269010957' && password === 'admin') { // Admin credentials
- await login(mobile, password, 'admin'); // Pass mobile, password, and role
-        } else if (mobile === '7269010957' && password === 'user') { // User credentials
- await login(mobile, password, 'user'); // Pass mobile, password, and role
+        
+        // Super Admin credentials
+        if (mobile === '9999999999' && password === 'superadmin') {
+          await login(mobile, password, 'superadmin');
+        }
+        // Admin credentials
+        else if (mobile === '7269010957' && password === 'admin') {
+          await login(mobile, password, 'admin');
+        }
+        // User credentials
+        else if (mobile === '7269010957' && password === 'user') {
+          await login(mobile, password, 'user');
         } else {
           setError('Invalid mobile number or password.');
         }
       }
       else {
         console.log('Attempting registration with:', formData);
-        // Optionally register and then login here
-        // await register(formData.mobile, formData.password, formData.otp);
-        // await login({ mobile: formData.mobile, role: 'user' });
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -61,7 +66,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
       <div className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-gray-700">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">
-            {mode === 'login' ? 'Welcome Back' : 'Join Jevelin'}
+            {mode === 'login' ? 'Welcome Back' : 'Join BetMaster'}
           </h2>
           <p className="text-gray-300">
             {mode === 'login'
@@ -69,6 +74,18 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
               : 'Start your journey today'}
           </p>
         </div>
+
+        {/* Login Credentials Info */}
+        {mode === 'login' && (
+          <div className="mb-6 p-4 bg-blue-900/20 rounded-lg border border-blue-500/20">
+            <h4 className="text-blue-400 font-semibold mb-2">Demo Credentials:</h4>
+            <div className="text-sm text-gray-300 space-y-1">
+              <p><strong>Super Admin:</strong> 9999999999 / superadmin</p>
+              <p><strong>Admin:</strong> 7269010957 / admin</p>
+              <p><strong>User:</strong> 7269010957 / user</p>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">

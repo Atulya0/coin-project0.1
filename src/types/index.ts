@@ -2,11 +2,12 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'superadmin';
   coins: number;
   coupons: Coupon[];
   createdAt: string;
   totalSpent: number;
+  mobile?: string;
 }
 
 export interface Coupon {

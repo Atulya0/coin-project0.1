@@ -87,7 +87,6 @@ const LandingPage: React.FC = () => {
      '/Game 1.jpg',
       '/Game 2.jpg',
        '/Game 3.jpg',
-    // Add more ad images here if needed
   ];
 
   // Auto-slide ads every 5 seconds
@@ -122,9 +121,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handlePaymentSuccess = () => {
-    // Handle successful payment
     console.log('Payment successful!');
-    // You can add logic here to update user coins, etc.
   };
 
   const nextAd = () => {
@@ -163,23 +160,21 @@ const LandingPage: React.FC = () => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3 transform hover:scale-105 transition-transform duration-300">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-r from-red-500 to-pink-600">
-  <img 
-    src="/WhatsApp Image 2025-06-18 at 00.51.14.jpeg" 
-    alt="BetMaster Logo" 
-    className="w-full h-full object-cover rounded-full"
-  />
-</div>
-
+                <img 
+                  src="/WhatsApp Image 2025-06-18 at 00.51.14.jpeg" 
+                  alt="BetMaster Logo" 
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">BetMaster</h1>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Replaced the ₹10 element with a Sign In button */}
               <button
                 onClick={() => {
-                  setAuthMode('login'); // Assuming 'login' is the mode for signing in
+                  setAuthMode('login');
                   setShowAuth(true);
                 }}
                 className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full px-4 py-2 flex items-center space-x-2 text-white font-bold hover:from-green-600 hover:to-emerald-600 transition-colors"
@@ -194,33 +189,32 @@ const LandingPage: React.FC = () => {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Real-time Trading Chart - Reduced Size */}
-        {/* Coin Details Section (replacing Trading Chart) */}
+        {/* Coin Details Section */}
         <section className="mb-8 animate-fade-in">
           <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 text-center">
             <h2 className="text-xl font-bold text-white mb-4">Coin Performance Details</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-gray-300 text-sm">
               <div>
                 <p className="font-semibold text-white">1 Month</p>
-                <p>Details Here</p> {/* Placeholder */}
+                <p>Details Here</p>
               </div>
               <div>
                 <p className="font-semibold text-white">6 Months</p>
-                <p>Details Here</p> {/* Placeholder */}
+                <p>Details Here</p>
               </div>
               <div>
                 <p className="font-semibold text-white">1 Year</p>
-                <p>Details Here</p> {/* Placeholder */}
+                <p>Details Here</p>
               </div>
               <div>
                 <p className="font-semibold text-white">2 Years</p>
-                <p>Details Here</p> {/* Placeholder */}
+                <p>Details Here</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Coin Packages Grid */}
+        {/* Coin Packages Grid - Fixed Sizes */}
         <section className="mb-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-4 animate-fade-in">Choose Your Coin Package</h2>
@@ -242,21 +236,18 @@ const LandingPage: React.FC = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="text-center">
-                    {/* Realistic Coin Image */}
-                  <div className="relative w-28 h-28 mx-auto mb-6">
-<div className="relative w-[112px] h-[112px] mx-auto mb-6 rounded-full overflow-hidden shadow-2xl border-4 border-white/20 bg-white/10">
-  <img
-    src={pkg.image}
-    alt={`${pkg.name} Coin`}
-    className="absolute top-0 left-0 w-full h-full object-cover"
-    style={{
-      filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))',
-    }}
-  />
-</div>
-
-
-                      
+                    {/* Fixed Size Coin Image Container */}
+                    <div className="relative w-32 h-32 mx-auto mb-6">
+                      <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden shadow-2xl border-4 border-white/20 bg-white/10">
+                        <img
+                          src={pkg.image}
+                          alt={`${pkg.name} Coin`}
+                          className="w-full h-full object-cover"
+                          style={{
+                            filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))',
+                          }}
+                        />
+                      </div>
                       {/* Coin Shadow */}
                       <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-6 ${pkg.shadowColor} rounded-full blur-md opacity-50`}></div>
                     </div>
@@ -315,16 +306,14 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Gaming Advertisement Slider - Reduced Size */}
+        {/* Gaming Advertisement Slider */}
         {showAd && (
           <section className="mb-12 animate-slide-up">
             <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-white/5 backdrop-blur-lg border border-white/10 max-w-4xl mx-auto">
-              {/* Ad Label */}
               <div className="absolute top-3 left-3 bg-yellow-500 text-black text-xs px-2 py-1 rounded z-20 font-bold">
                 AD
               </div>
               
-              {/* Close button */}
               <button
                 onClick={() => setShowAd(false)}
                 className="absolute top-3 right-3 text-white/90 hover:text-white transition-colors z-20 bg-black/50 rounded-full p-2 transform hover:scale-110"
@@ -332,68 +321,62 @@ const LandingPage: React.FC = () => {
                 <X className="w-4 h-4" />
               </button>
               
-              {/* Slider Container - Reduced Height */}
-             <div className="relative h-72 md:h-96 w-full max-w-screen-lg mx-auto">
-  <div 
-    className="flex transition-transform duration-500 ease-in-out h-full w-full"
-    style={{ transform: `translateX(-${currentAdIndex * 100}%)` }}
-  >
-    {adImages.map((image, index) => (
-      <div key={index} className="w-full flex-shrink-0 relative flex items-center justify-center bg-black">
-        <img 
-          src={image} 
-          alt={`Advertisement ${index + 1}`} 
-          className="w-full h-full object-contain"
-        />
-        {/* Click overlay */}
-        <div 
-          className="absolute inset-0 bg-transparent hover:bg-black/10 transition-all duration-300 cursor-pointer"
-          onClick={() => {
-            setAuthMode('register');
-            setShowAuth(true);
-          }}
-        >
-          {/* Hover effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/0 to-orange-500/0 hover:from-yellow-400/10 hover:to-orange-500/10 transition-all duration-300"></div>
-        </div>
-      </div>
-    ))}
-  </div>
+              <div className="relative h-72 md:h-96 w-full max-w-screen-lg mx-auto">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out h-full w-full"
+                  style={{ transform: `translateX(-${currentAdIndex * 100}%)` }}
+                >
+                  {adImages.map((image, index) => (
+                    <div key={index} className="w-full flex-shrink-0 relative flex items-center justify-center bg-black">
+                      <img 
+                        src={image} 
+                        alt={`Advertisement ${index + 1}`} 
+                        className="w-full h-full object-contain"
+                      />
+                      <div 
+                        className="absolute inset-0 bg-transparent hover:bg-black/10 transition-all duration-300 cursor-pointer"
+                        onClick={() => {
+                          setAuthMode('register');
+                          setShowAuth(true);
+                        }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/0 to-orange-500/0 hover:from-yellow-400/10 hover:to-orange-500/10 transition-all duration-300"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-  {/* Navigation arrows */}
-  {adImages.length > 1 && (
-    <>
-      <button
-        onClick={prevAd}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-300 z-10"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={nextAd}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-300 z-10"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-    </>
-  )}
+                {adImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevAd}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-300 z-10"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={nextAd}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-300 z-10"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
 
-  {/* Dots indicator */}
-  {adImages.length > 1 && (
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-      {adImages.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => setCurrentAdIndex(index)}
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            index === currentAdIndex ? 'bg-white' : 'bg-white/50'
-          }`}
-        />
-      ))}
-    </div>
-  )}
-</div>
-
+                {adImages.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+                    {adImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentAdIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentAdIndex ? 'bg-white' : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
         )}
@@ -437,19 +420,21 @@ const LandingPage: React.FC = () => {
         />
       )}
 
-      {/* Floating particles for ambiance */}
+      {/* Animated ₹ Signs Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-yellow-400/20 rounded-full animate-float"
+            className="absolute text-yellow-400/20 text-2xl font-bold animate-float"
             style={{
               left: `${10 + Math.random() * 80}%`,
               top: `${10 + Math.random() * 80}%`,
               animationDelay: `${Math.random() * 10}s`,
               animationDuration: `${5 + Math.random() * 10}s`
             }}
-          />
+          >
+            ₹
+          </div>
         ))}
       </div>
     </div>
